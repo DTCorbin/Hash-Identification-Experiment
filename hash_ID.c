@@ -27,27 +27,27 @@ char *chopLeft(char *hash, int spaces) {
 	return hash;
 }
 
-void copyStr(char *dest, char *src) {
-	char *temp = dest;
-	while (src != 0) {
-		*temp++ = *src++;
-	}
-
-	printf("%s", dest);
-}
-
 char *chopRight(char *str, char delimiter) {
 	int len = strLen(str);
 	char temp[len];
 	strcpy(temp, str);
 	for (int i = len; str[i] != delimiter; i--) {
-		temp[i] = '\0';
+		temp[i] = '0';
 		len--;
 	}
 	temp[len] = '\0';
-	str = temp;
-	return str;
+	char *trimmed = (char *)malloc(sizeof(char)*len);
+	strcpy(trimmed, temp);
+	return trimmed;
 }
+
+char *extractID(char *str, char delimiter) {
+	char *id;
+	id = chopLeft(str, 1);
+	id = chopRight(id, delimiter);
+	return id;
+}
+
 
 int scanSingleDelimiter(char *hash) {
 	int exists = 0;
@@ -66,21 +66,20 @@ int main (int argc, char* argv[]) {
         char *message = argv[1];
 		char *id = strdup(message);
         if (message[0] == '$'){
-			id = chopLeft(id, 1);
-			id = chopRight(id, '$');
-            printf("Identifier: %s", id);
+		id = extractID(id, '$');
+            	printf("Identifier: %s", id);
 	    	free(id);
-		} else if (message[0] == '{'){
-			id = chopLeft(id, 1);
-			id = chopRight(id, '}');
-            printf("Identifier: %s", id);
+	} else if (message[0] == '{'){
+		id = extractID(id, '}');
+            	printf("Identifier: %s", id);
 	    	free(id);
         } else if (int check = scanSingleDelimiter(message) != 1){
-            printf("Other type of hash");
-		} else {
-			id = chopRight(id, '$');
-			printf("Identifier: %s", id);
-		}
+            	printf("Other type of hash");
+	} else {
+		id = chopRight(id, '$');
+		printf("Identifier: %s", id);
+	    	free(id);
+	}
     } else {
         printf("\e[31m***You must pass your hash as an argument***\e[0m");
     }
